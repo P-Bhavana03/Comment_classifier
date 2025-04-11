@@ -1,0 +1,52 @@
+[
+    {
+        "comment_id": 1,
+        "username": "user123",
+        "comment_text": "This is a great post! Very informative."
+    },
+    {
+        "comment_id": 2,
+        "username": "trollMaster",
+        "comment_text": "You are an idiot, nobody cares about your opinion."
+    },
+    {
+        "comment_id": 3,
+        "username": "helpfulHannah",
+        "comment_text": "Could you please clarify point number 3?"
+    },
+    {
+        "comment_id": 4,
+        "username": "angryAlex",
+        "comment_text": "This is the worst thing I have ever read. Utter garbage!"
+    },
+    {
+        "comment_id": 5,
+        "username": "spamBot99",
+        "comment_text": "CLICK HERE TO WIN A FREE IPHONE!!! www.totallynotascam.com"
+    },
+    {
+        "comment_id": 6,
+        "username": "positivePete",
+        "comment_text": "Love the insights shared here. Keep up the good work!"
+    },
+    {
+        "comment_id": 7,
+        "username": "negativeNancy",
+        "comment_text": "I disagree with everything you said. It's poorly researched."
+    },
+    {
+        "comment_id": 8,
+        "username": "haterHarry",
+        "comment_text": "People like you should just disappear. You're worthless."
+    },
+    {
+        "comment_id": 9,
+        "username": "curiousChris",
+        "comment_text": "Interesting perspective. Where did you find this data?"
+    },
+    {
+        "comment_id": 10,
+        "username": "offensiveOscar",
+        "comment_text": "Go back to where you came from, you don't belong here."
+    }
+]
