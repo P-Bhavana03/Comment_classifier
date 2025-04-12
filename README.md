@@ -13,6 +13,9 @@ This Python application reads user comments from a JSON file, uses the Google Ge
 - Handles API errors and retries.
 - Outputs analyzed data to a new JSON file (`analyzed_comments.json`).
 - Prints a summary report to the console.
+- **New:** Accepts input file path via CLI argument (`--input` or `-i`).
+- **New:** Pre-filters comments using the `better-profanity` library to quickly flag obvious profanity.
+- **New:** Generates a bar chart (`offense_distribution.png`) visualizing the distribution of detected offense types.
 
 ## Project Structure
 
@@ -24,6 +27,7 @@ Comment_classifier/
 ├── comment_analyzer.py # Main Python script
 ├── requirements.txt    # Python dependencies
 ├── analyzed_comments.json # Output file (generated after running)
+├── offense_distribution.png # Output chart (generated after running, if offensive comments found)
 └── README.md           # This file
 ```
 
@@ -56,25 +60,31 @@ Comment_classifier/
       ```
       GEMINI_API_KEY=YOUR_ACTUAL_API_KEY
       ```
-    - You can obtain a Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ## How to Use
 
 1.  **Prepare Input Data:**
 
-    - Ensure you have a `comments.json` file in the project directory.
+    - Ensure you have a JSON file containing comments in the project directory (default is `comments.json`).
     - The file should be a JSON array of objects, each with `comment_id`, `username`, and `comment_text` fields. A sample file is provided.
 
 2.  **Run the Script:**
-    Make sure your virtual environment is activated and you are in the project directory. Execute the script from your terminal:
+    Make sure your virtual environment is activated and you are in the project directory. Execute the script from your terminal. You can optionally specify the input file:
 
     ```bash
+    # Use default input file (comments.json)
     python comment_analyzer.py
+
+    # Specify a different input file
+    python comment_analyzer.py --input path/to/your/comments.json
+    # Or using the short flag
+    python comment_analyzer.py -i path/to/your/comments.json
     ```
 
 3.  **View Results:**
     - The script will print logs and a summary report to the console during execution.
     - An `analyzed_comments.json` file will be created (or overwritten) in the project directory. This file contains the original comment data along with the added `analysis` field for each comment.
+    - If offensive comments are detected, an `offense_distribution.png` image file will be created (or overwritten), showing a bar chart of the offense types.
 
 ## Sample Output
 
@@ -115,19 +125,21 @@ Top 5 Most Offensive Comments (by estimated severity):
    Comment: Go back to where you came from, you don't belong here.
    Type: hate speech, Explanation: This comment uses xenophobic language to attack someone based on their perceived origin.
 ----------
-3. ID: 2, User: trollMaster, Severity: 3
-   Comment: You are an idiot, nobody cares about your opinion.
-   Type: toxicity, Explanation: The comment uses insulting language ('idiot') to attack the user directly.
+3. ID: 16, User: harassingHenry, Severity: 4
+   Comment: I know where you live. Watch your back.
+   Type: harassment, Explanation: The comment is a direct threat and could be interpreted as a form of harassment or stalking.  It implies knowledge of the user's location and suggests potential harm.
 ----------
-4. ID: 4, User: angryAlex, Severity: 2
-   Comment: This is the worst thing I have ever read. Utter garbage!
-   Type: toxicity, Explanation: While negative, the comment uses strong insults ('utter garbage') directed at the content.
+4. ID: 2, User: trollMaster, Severity: 3
+   Comment: You are an idiot, nobody cares about your opinion.
+   Type: toxicity, Explanation: The comment contains an insult ("idiot") and a dismissive remark ("nobody cares about your opinion"), which are both considered toxic and offensive.
+----------
+5. ID: 18, User: profanePaul, Severity: 3
+   Comment: What the hell is wrong with you? This is ridiculous.
+   Type: profanity, Explanation: Detected by profanity pre-filter.
 ----------
 --- End of Report ---
 INFO:root:Comment analysis process finished.
 ```
-
-_(Note: Actual classifications, explanations, and severity scores may vary based on the Gemini model's response.)_
 
 ### `analyzed_comments.json` File
 

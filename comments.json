@@ -48,5 +48,60 @@
         "comment_id": 10,
         "username": "offensiveOscar",
         "comment_text": "Go back to where you came from, you don't belong here."
+    },
+    {
+        "comment_id": 11,
+        "username": "supportiveSue",
+        "comment_text": "I really appreciate you taking the time to explain this."
+    },
+    {
+        "comment_id": 12,
+        "username": "rudeRandy",
+        "comment_text": "That's the stupidest thing I've heard all day. Get a brain!"
+    },
+    {
+        "comment_id": 13,
+        "username": "questioningQuinn",
+        "comment_text": "Are you sure about that statistic? It seems quite high."
+    },
+    {
+        "comment_id": 14,
+        "username": "botPromoter",
+        "comment_text": "Check out my amazing new crypto scheme! Guaranteed returns! #makemoneyfast"
+    },
+    {
+        "comment_id": 15,
+        "username": "agreeableAmy",
+        "comment_text": "Completely agree with your points. Well said."
+    },
+    {
+        "comment_id": 16,
+        "username": "harassingHenry",
+        "comment_text": "I know where you live. Watch your back."
+    },
+    {
+        "comment_id": 17,
+        "username": "confusedCarl",
+        "comment_text": "I don't understand this part, can someone explain it differently?"
+    },
+    {
+        "comment_id": 18,
+        "username": "profanePaul",
+        "comment_text": "What the hell is wrong with you? This is ridiculous."
+    },
+    {
+        "comment_id": 19,
+        "username": "jokeJenny",
+        "comment_text": "Why don't scientists trust atoms? Because they make up everything! haha"
+    },
+    {
+        "comment_id": 20,
+        "username": "dismissiveDan",
+        "comment_text": "Whatever. Nobody cares."
+    },
+    {
+        "comment_id": 21,
+        "username": "bradpitt",
+        "comment_text": "Why the hell are you doing this?."
     }
 ]

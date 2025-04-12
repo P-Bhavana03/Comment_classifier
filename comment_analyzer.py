@@ -1,10 +1,13 @@
 import json
 import os
 import time
+import argparse
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.generativeai import types
 import logging
+import matplotlib.pyplot as plt
+from better_profanity import profanity
 
 
 logging.basicConfig(
@@ -202,18 +205,62 @@ def generate_report(analyzed_comments):
             )
             print("-" * 10)
 
+    if num_offensive > 0:
+        try:
+            types = list(offense_counts.keys())
+            counts = list(offense_counts.values())
+
+            plt.figure(figsize=(10, 6))
+            bars = plt.bar(types, counts, color="skyblue")
+            plt.xlabel("Offense Type")
+            plt.ylabel("Number of Comments")
+            plt.title("Distribution of Offensive Comment Types")
+            plt.xticks(rotation=45, ha="right")
+            plt.tight_layout()
+
+            for bar in bars:
+                yval = bar.get_height()
+                plt.text(
+                    bar.get_x() + bar.get_width() / 2.0,
+                    yval,
+                    int(yval),
+                    va="bottom",
+                    ha="center",
+                )
+
+            chart_filename = "offense_distribution.png"
+            plt.savefig(chart_filename)
+            logging.info(f"Saved offense distribution chart to {chart_filename}")
+            plt.close()
+        except Exception as e:
+            logging.error(f"Failed to generate or save offense distribution chart: {e}")
+
     print("--- End of Report ---")
 
 
 def main():
     """Main function to run the comment analysis."""
-    logging.info("Starting comment analysis process...")
+    parser = argparse.ArgumentParser(
+        description="Analyze user comments for offensive content."
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        default=INPUT_FILE,
+        help=f"Path to the input JSON file containing comments (default: {INPUT_FILE})",
+    )
+    args = parser.parse_args()
+    input_filepath = args.input
+
+    logging.info(
+        f"Starting comment analysis process using input file: {input_filepath}..."
+    )
 
     genai_client = configure_genai()
     if not genai_client:
         return
 
-    comments = load_comments(INPUT_FILE)
+    comments = load_comments(input_filepath)
     if comments is None:
         return
 
@@ -227,10 +274,14 @@ def main():
             )
     print("-" * 20 + "\n")
 
-    logging.info("Starting comment analysis using Gemini API...")
+    profanity.load_censor_words()
+    logging.info("Initialized profanity checker.")
+
+    logging.info("Starting comment analysis (with profanity pre-check)...")
     analyzed_comments = []
     processed_count = 0
     failed_count = 0
+    pre_filtered_count = 0
 
     for comment in comments:
         comment_text = comment.get("comment_text")
@@ -243,23 +294,42 @@ def main():
             failed_count += 1
             continue
 
-        logging.info(f"Analyzing comment ID: {comment.get('comment_id')}...")
-        analysis_result = analyze_comment_with_retry(
-            genai_client, MODEL_NAME, comment_text
-        )
+        if profanity.contains_profanity(comment_text):
+            logging.info(
+                f"Profanity detected in comment ID: {comment.get('comment_id')}. Skipping API call."
+            )
+            analysis_result = {
+                "is_offensive": True,
+                "offense_type": "profanity",
+                "explanation": "Detected by profanity pre-filter.",
+                "severity": 3,
+            }
+            pre_filtered_count += 1
+        else:
+
+            logging.info(
+                f"Analyzing comment ID: {comment.get('comment_id')} via Gemini API..."
+            )
+            analysis_result = analyze_comment_with_retry(
+                genai_client, MODEL_NAME, comment_text
+            )
+
+            if analysis_result:
+                processed_count += 1
+            else:
+                comment["analysis"] = {"error": "Failed to analyze after retries"}
+                failed_count += 1
+                logging.error(
+                    f"Failed to analyze comment ID: {comment.get('comment_id')}"
+                )
 
         if analysis_result:
             comment["analysis"] = analysis_result
-            processed_count += 1
-        else:
-            comment["analysis"] = {"error": "Failed to analyze after retries"}
-            failed_count += 1
-            logging.error(f"Failed to analyze comment ID: {comment.get('comment_id')}")
 
         analyzed_comments.append(comment)
 
     logging.info(
-        f"Analysis complete. Processed: {processed_count}, Failed: {failed_count}"
+        f"Analysis complete. Pre-filtered (profanity): {pre_filtered_count}, Processed via API: {processed_count}, Failed: {failed_count}"
     )
 
     save_analyzed_comments(OUTPUT_FILE, analyzed_comments)
